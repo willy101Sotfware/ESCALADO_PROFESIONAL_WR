@@ -136,47 +136,96 @@ Public Class ThisMacroStorage_EscalarCalzado
 
             ' Formulario para rango de tallas
             Using form As New Form()
+                ' Configuración básica del formulario
                 form.Text = "Escalar Patrón - Rango de Tallas"
-                form.Size = New Size(300, 250)
+                form.Size = New Size(400, 300)
                 form.FormBorderStyle = FormBorderStyle.FixedDialog
                 form.StartPosition = FormStartPosition.CenterScreen
                 form.MaximizeBox = False
                 form.MinimizeBox = False
 
-                ' Mostrar talla base
+                ' Cargar y configurar la imagen de fondo usando el mismo método que funciona
+                Dim formBackgroundImage2 As Image = Nothing
+                Try
+                    ' Usar la ruta directa desde el directorio del proyecto
+                    formBackgroundImage2 = Image.FromFile("C:\Users\William Ruiz\Desktop\ESCALDO\www.root\Images\Logo2.png")
+                    form.BackgroundImage = formBackgroundImage2
+                    form.BackgroundImageLayout = ImageLayout.Stretch
+
+                    ' Agregar el mismo evento de pintura que funciona en la ventana principal
+                    AddHandler form.Paint, Sub(sender As Object, e As PaintEventArgs)
+                                               If formBackgroundImage2 IsNot Nothing Then
+                                                   e.Graphics.DrawImage(formBackgroundImage2, 0, 0, form.Width, form.Height)
+                                                   Using brush As New SolidBrush(Color.FromArgb(100, Color.White))
+                                                       e.Graphics.FillRectangle(brush, 0, 0, form.Width, form.Height)
+                                                   End Using
+                                               End If
+                                           End Sub
+                Catch ex As Exception
+                    MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
+                End Try
+
+                ' Mostrar talla base con estilo
                 Dim lblBase As New Label()
                 lblBase.Text = $"Talla Base Detectada: {tallaBase}"
                 lblBase.Location = New Point(20, 20)
-                lblBase.AutoSize = True
+                lblBase.Size = New Size(360, 30)
+                lblBase.Font = New Font("Arial", 12, FontStyle.Bold)
+                lblBase.TextAlign = ContentAlignment.MiddleCenter
+                lblBase.BackColor = Color.FromArgb(200, 0, 120, 215)
+                lblBase.ForeColor = Color.White
 
-                ' Input para talla menor
+                ' Input para talla menor con estilo
                 Dim lblMenor As New Label()
                 lblMenor.Text = "Talla Menor:"
-                lblMenor.Location = New Point(20, 60)
-                lblMenor.AutoSize = True
+                lblMenor.Location = New Point(20, 70)
+                lblMenor.Size = New Size(150, 25)
+                lblMenor.Font = New Font("Arial", 10, FontStyle.Bold)
+                lblMenor.BackColor = Color.FromArgb(200, 255, 255, 255)
+                lblMenor.TextAlign = ContentAlignment.MiddleLeft
 
                 Dim txtMenor As New TextBox()
-                txtMenor.Location = New Point(20, 80)
-                txtMenor.Size = New Size(100, 20)
+                txtMenor.Location = New Point(180, 70)
+                txtMenor.Size = New Size(100, 25)
+                txtMenor.Font = New Font("Arial", 12, FontStyle.Regular)
+                txtMenor.TextAlign = HorizontalAlignment.Center
 
-                ' Input para talla mayor
+                ' Input para talla mayor con estilo
                 Dim lblMayor As New Label()
                 lblMayor.Text = "Talla Mayor:"
-                lblMayor.Location = New Point(20, 120)
-                lblMayor.AutoSize = True
+                lblMayor.Location = New Point(20, 110)
+                lblMayor.Size = New Size(150, 25)
+                lblMayor.Font = New Font("Arial", 10, FontStyle.Bold)
+                lblMayor.BackColor = Color.FromArgb(200, 255, 255, 255)
+                lblMayor.TextAlign = ContentAlignment.MiddleLeft
 
                 Dim txtMayor As New TextBox()
-                txtMayor.Location = New Point(20, 140)
-                txtMayor.Size = New Size(100, 20)
+                txtMayor.Location = New Point(180, 110)
+                txtMayor.Size = New Size(100, 25)
+                txtMayor.Font = New Font("Arial", 12, FontStyle.Regular)
+                txtMayor.TextAlign = HorizontalAlignment.Center
 
-                ' Botón OK
+                ' Botón OK con estilo
                 Dim btnOK As New Button()
                 btnOK.Text = "Generar Tallas"
                 btnOK.DialogResult = DialogResult.OK
-                btnOK.Location = New Point(20, 180)
+                btnOK.Location = New Point(100, 160)
+                btnOK.Size = New Size(200, 40)
+                btnOK.Font = New Font("Arial", 12, FontStyle.Bold)
+                btnOK.BackColor = Color.FromArgb(0, 120, 215)
+                btnOK.ForeColor = Color.White
+                btnOK.FlatStyle = FlatStyle.Flat
+                btnOK.Cursor = Cursors.Hand
 
-                ' Agregar controles
+                ' Agregar controles directamente al formulario
                 form.Controls.AddRange({lblBase, lblMenor, txtMenor, lblMayor, txtMayor, btnOK})
+
+                ' Asegurarse de liberar la imagen cuando se cierre el formulario
+                AddHandler form.FormClosing, Sub(sender As Object, e As FormClosingEventArgs)
+                                                 If formBackgroundImage2 IsNot Nothing Then
+                                                     formBackgroundImage2.Dispose()
+                                                 End If
+                                             End Sub
 
                 If form.ShowDialog() = DialogResult.OK Then
                     Dim tallaMenor As Integer
@@ -248,7 +297,19 @@ Public Class Form1
     Private WithEvents btnEjecutar As New Button()
     Private macroStorage As ThisMacroStorage_EscalarCalzado
     Private formBackgroundImage As Image
-    Private lblContacto As Label  ' Nuevo label para contacto
+    Private lblContacto As Label
+
+    ' APIs para mover la ventana
+    Private Declare Function ReleaseCapture Lib "user32.dll" () As Boolean
+    Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hwnd As IntPtr, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+
+    Protected Overrides ReadOnly Property CreateParams As CreateParams
+        Get
+            Dim cp As CreateParams = MyBase.CreateParams
+            cp.ExStyle = cp.ExStyle Or &H2000000  ' WS_EX_COMPOSITED
+            Return cp
+        End Get
+    End Property
 
     Public Sub New()
         InitializeComponent()
@@ -257,38 +318,79 @@ Public Class Form1
     Private Sub InitializeComponent()
         ' Configurar el botón
         btnEjecutar.Text = "Escalar Patrón"
-        btnEjecutar.Location = New Point(100, 80)
+        btnEjecutar.Location = New Point(100, 120)
         btnEjecutar.Size = New Size(200, 50)
         btnEjecutar.Font = New Font("Arial", 12, FontStyle.Bold)
-        btnEjecutar.BackColor = Color.FromArgb(240, 240, 240)
+        btnEjecutar.BackColor = Color.White
         btnEjecutar.FlatStyle = FlatStyle.Flat
+        btnEjecutar.FlatAppearance.BorderColor = Color.FromArgb(0, 174, 239)
+        btnEjecutar.FlatAppearance.BorderSize = 2
+
+        ' Configurar el pie de página
+        lblContacto = New Label()
+        lblContacto.Text = "Atención cliente: wilyd2@hotmail.com  Tel: +573147743846"
+        lblContacto.AutoSize = False
+        lblContacto.Size = New Size(400, 30)
+        lblContacto.TextAlign = ContentAlignment.MiddleCenter
+        lblContacto.Font = New Font("Arial", 9, FontStyle.Bold)
+        lblContacto.BackColor = Color.FromArgb(0, 174, 239)
+        lblContacto.ForeColor = Color.White
+        lblContacto.Dock = DockStyle.Bottom
 
         ' Configurar el formulario
         Me.Text = "Escalador de Patrones Profesional"
-        Me.Size = New Size(400, 280) ' Aumentar el tamaño del formulario para acomodar el label de contacto
-        Me.FormBorderStyle = FormBorderStyle.FixedDialog
+        Me.Size = New Size(400, 300)
+        Me.FormBorderStyle = FormBorderStyle.None  ' Quitar el borde estándar
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.MaximizeBox = False
         Me.MinimizeBox = False
 
-        ' Crear y configurar el label de contacto
-        lblContacto = New Label()
-        lblContacto.Text = "Atención cliente: wilyd2@hotmail.com  Tel: +573147743846"
-        lblContacto.AutoSize = False
-        lblContacto.Size = New Size(400, 20)
-        lblContacto.TextAlign = ContentAlignment.MiddleCenter
-        lblContacto.Font = New Font("Arial", 9, FontStyle.Regular)
-        lblContacto.BackColor = Color.FromArgb(240, 240, 240)
-        lblContacto.ForeColor = Color.FromArgb(60, 60, 60)
-        lblContacto.Dock = DockStyle.Bottom
+        ' Panel azul para la barra de título personalizada
+        Dim titleBar As New Panel()
+        titleBar.BackColor = Color.FromArgb(0, 174, 239)
+        titleBar.Dock = DockStyle.Top
+        titleBar.Height = 30
 
-        ' Agregar controles
+        ' Botón de cerrar
+        Dim closeButton As New Button()
+        closeButton.Text = "X"
+        closeButton.Size = New Size(30, 30)
+        closeButton.FlatStyle = FlatStyle.Flat
+        closeButton.FlatAppearance.BorderSize = 0
+        closeButton.BackColor = Color.FromArgb(0, 174, 239)
+        closeButton.ForeColor = Color.White
+        closeButton.Dock = DockStyle.Right
+        closeButton.Font = New Font("Arial", 12)
+        AddHandler closeButton.Click, Sub() Me.Close()
+
+        ' Título
+        Dim titleLabel As New Label()
+        titleLabel.Text = "Escalador de Patrones Profesional"
+        titleLabel.ForeColor = Color.White
+        titleLabel.Font = New Font("Arial", 10, FontStyle.Bold)
+        titleLabel.Dock = DockStyle.Fill
+        titleLabel.TextAlign = ContentAlignment.MiddleCenter
+
+        ' Agregar controles a la barra de título
+        titleBar.Controls.Add(closeButton)
+        titleBar.Controls.Add(titleLabel)
+
+        ' Agregar controles al formulario
+        Me.Controls.Add(titleBar)
         Me.Controls.Add(btnEjecutar)
         Me.Controls.Add(lblContacto)
 
+        ' Hacer que el formulario sea movible
+        AddHandler titleBar.MouseDown, Sub(sender, e)
+                                           If e.Button = MouseButtons.Left Then
+                                               ReleaseCapture()
+                                               SendMessage(Me.Handle, &H112, &HF012, 0)
+                                           End If
+                                       End Sub
+
         ' Configurar la imagen de fondo
         Try
-            formBackgroundImage = Image.FromFile(System.IO.Path.Combine(Application.StartupPath, "www.root", "Images", "LOGO.png"))
+            formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\ESCALDO\www.root\Images\LOGO.png")
             Me.BackgroundImage = formBackgroundImage
             Me.BackgroundImageLayout = ImageLayout.Stretch
         Catch ex As Exception
