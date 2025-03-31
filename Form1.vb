@@ -1,6 +1,7 @@
 Imports System.Windows.Forms
 Imports System.Drawing
 Imports System.Text.RegularExpressions
+Imports System.IO
 
 Public Class ThisMacroStorage_EscalarCalzado
     ' Constantes de CorelDRAW
@@ -23,7 +24,7 @@ Public Class ThisMacroStorage_EscalarCalzado
             corelApp = CreateObject("CorelDRAW.Application")
         End Try
         corelApp.Visible = True
-        
+
         ' Asegurarse de que haya un documento activo
         If corelApp.Documents.Count = 0 Then
             corelApp.CreateDocument()
@@ -102,16 +103,16 @@ Public Class ThisMacroStorage_EscalarCalzado
 
     Private Function InputTallaManual(mensaje As String) As Integer
         Dim inputValor As String = InputBox(mensaje, "Talla", "")
-        
+
         If String.IsNullOrEmpty(inputValor) Then
             Return 0
         End If
-        
+
         If Not IsNumeric(inputValor) Then
             MessageBox.Show("Debe ingresar un número válido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return 0
         End If
-        
+
         Return CInt(inputValor)
     End Function
 
@@ -124,10 +125,10 @@ Public Class ThisMacroStorage_EscalarCalzado
             End If
 
             Dim baseShape As Object = corelApp.ActiveDocument.Selection.Shapes(1)
-            
+
             ' Detectar talla base
             Dim tallaBase As Integer = ObtenerTallaDesdeForma(baseShape)
-            
+
             ' Si no se detectó talla, pedirla manualmente
             If tallaBase = 0 Then
                 tallaBase = InputTallaManual("No se detectó talla. Ingrese la talla BASE del molde:")
@@ -231,11 +232,11 @@ Public Class ThisMacroStorage_EscalarCalzado
                     Dim tallaMenor As Integer
                     Dim tallaMayor As Integer
 
-                    If Integer.TryParse(txtMenor.Text, tallaMenor) AndAlso 
+                    If Integer.TryParse(txtMenor.Text, tallaMenor) AndAlso
                        Integer.TryParse(txtMayor.Text, tallaMayor) Then
-                        
+
                         If tallaMenor > tallaMayor Then
-                            MessageBox.Show("ERROR: La talla menor no puede ser mayor que la talla mayor", "Error", 
+                            MessageBox.Show("ERROR: La talla menor no puede ser mayor que la talla mayor", "Error",
                                           MessageBoxButtons.OK, MessageBoxIcon.Error)
                             Exit Sub
                         End If
@@ -256,7 +257,7 @@ Public Class ThisMacroStorage_EscalarCalzado
 
                                 ' Duplicar y escalar
                                 Dim newShape As Object = baseShape.Duplicate()
-                                
+
                                 ' Aplicar el escalado: factorLargo para altura, factorAncho para ancho
                                 newShape.Stretch(factorAncho, factorLargo)  ' (ancho, alto)
 
@@ -271,12 +272,12 @@ Public Class ThisMacroStorage_EscalarCalzado
 
                         corelApp.Optimization = False
                         corelApp.Refresh()
-                        MessageBox.Show($"Patrones escalados correctamente:{Environment.NewLine}" & _
-                                      $"Talla base: {tallaBase}{Environment.NewLine}" & _
-                                      $"Tallas generadas: {tallaMenor} a {tallaMayor}", 
+                        MessageBox.Show($"Patrones escalados correctamente:{Environment.NewLine}" &
+                                      $"Talla base: {tallaBase}{Environment.NewLine}" &
+                                      $"Tallas generadas: {tallaMenor} a {tallaMayor}",
                                       "Proceso Completado", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     Else
-                        MessageBox.Show("Por favor ingrese tallas válidas", "Error", 
+                        MessageBox.Show("Por favor ingrese tallas válidas", "Error",
                                       MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End If
                 End If
@@ -284,8 +285,8 @@ Public Class ThisMacroStorage_EscalarCalzado
 
         Catch ex As Exception
             corelApp.Optimization = False
-            MessageBox.Show($"Error: {ex.Message}{Environment.NewLine}" & _
-                          "Verifique que el molde base contenga números visibles", 
+            MessageBox.Show($"Error: {ex.Message}{Environment.NewLine}" &
+                          "Verifique que el molde base contenga números visibles",
                           "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
@@ -295,9 +296,11 @@ Public Class Form1
     Inherits Form
 
     Private WithEvents btnEjecutar As New Button()
+    Private WithEvents btnAdmin As New Button()
     Private macroStorage As ThisMacroStorage_EscalarCalzado
     Private formBackgroundImage As Image
     Private lblContacto As Label
+    Private currentLicense As LicenseManager.LicenseInfo
 
     ' APIs para mover la ventana
     Private Declare Function ReleaseCapture Lib "user32.dll" () As Boolean
@@ -312,11 +315,19 @@ Public Class Form1
     End Property
 
     Public Sub New()
+        ' Verificar licencia antes de inicializar
+        currentLicense = LicenseManager.ValidateLicense()
+
+        If Not currentLicense.IsValid Then
+            MessageBox.Show("La licencia no es válida o ha expirado. Por favor use el botón de Administración para generar una nueva licencia.",
+                          "Error de Licencia", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
+
         InitializeComponent()
     End Sub
 
     Private Sub InitializeComponent()
-        ' Configurar el botón
+        ' Configurar el botón ejecutar
         btnEjecutar.Text = "Escalar Patrón"
         btnEjecutar.Location = New Point(100, 120)
         btnEjecutar.Size = New Size(200, 50)
@@ -325,6 +336,15 @@ Public Class Form1
         btnEjecutar.FlatStyle = FlatStyle.Flat
         btnEjecutar.FlatAppearance.BorderColor = Color.FromArgb(0, 174, 239)
         btnEjecutar.FlatAppearance.BorderSize = 2
+
+        ' Configurar el botón de administración
+        btnAdmin.Text = "Administración"
+        btnAdmin.Size = New Size(100, 30)
+        btnAdmin.Location = New Point(Me.Width - 120, 40)
+        btnAdmin.FlatStyle = FlatStyle.Flat
+        btnAdmin.FlatAppearance.BorderSize = 1
+        btnAdmin.BackColor = Color.FromArgb(0, 174, 239)
+        btnAdmin.ForeColor = Color.White
 
         ' Configurar el pie de página
         lblContacto = New Label()
@@ -377,6 +397,7 @@ Public Class Form1
 
         ' Agregar controles al formulario
         Me.Controls.Add(titleBar)
+        Me.Controls.Add(btnAdmin)
         Me.Controls.Add(btnEjecutar)
         Me.Controls.Add(lblContacto)
 
@@ -402,7 +423,7 @@ Public Class Form1
         If formBackgroundImage IsNot Nothing Then
             ' Dibujar la imagen de fondo sin capa semitransparente
             e.Graphics.DrawImage(formBackgroundImage, 0, 0, Me.Width, Me.Height)
-            
+
             ' Agregar una capa blanca muy sutil (casi transparente)
             Using brush As New SolidBrush(Color.FromArgb(100, Color.White))
                 e.Graphics.FillRectangle(brush, 0, 0, Me.Width, Me.Height)
@@ -414,14 +435,28 @@ Public Class Form1
 
     Private Sub btnEjecutar_Click(sender As Object, e As EventArgs) Handles btnEjecutar.Click
         Try
+            If Not currentLicense.IsValid Then
+                MessageBox.Show("La licencia no es válida o ha expirado. Por favor use el botón de Administración para generar una nueva licencia.",
+                              "Error de Licencia", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return
+            End If
+
             If macroStorage Is Nothing Then
                 macroStorage = New ThisMacroStorage_EscalarCalzado()
             End If
             macroStorage.EscalarPatrones()
         Catch ex As Exception
-            MessageBox.Show("Error al ejecutar la macro: " & vbCrLf & ex.Message, "Error", 
+            MessageBox.Show("Error al ejecutar la macro: " & vbCrLf & ex.Message, "Error",
                           MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub btnAdmin_Click(sender As Object, e As EventArgs) Handles btnAdmin.Click
+        Dim adminForm As New AdminLicenseForm()
+        If adminForm.ShowDialog() = DialogResult.OK Then
+            ' Recargar la licencia después de cerrar el formulario de administración
+            currentLicense = LicenseManager.ValidateLicense()
+        End If
     End Sub
 
     Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
@@ -430,4 +465,4 @@ Public Class Form1
         End If
         MyBase.OnFormClosing(e)
     End Sub
-End Class 
+End Class
