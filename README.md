@@ -2,6 +2,8 @@
 
 Software profesional para escalar patrones de calzado utilizando el sistema francés de medidas. Integrado con CorelDRAW para manipulación precisa de patrones.
 
+![Vista principal del programa](www.root/main-view.png)
+
 ## Características Principales
 
 - **Detección Automática de Talla**: Detecta automáticamente la talla base del patrón seleccionado.
@@ -11,6 +13,14 @@ Software profesional para escalar patrones de calzado utilizando el sistema fran
 - **Actualización Inteligente**: Actualiza automáticamente todos los números en los patrones escalados
 - **Organización Espacial**: Distribuye los patrones escalados de manera ordenada con espaciado automático
 - **Interfaz Intuitiva**: Diseño simple y efectivo para una operación rápida
+
+## Demostración Visual
+
+### Proceso de Escalado
+![Proceso de escalado](www.root/scaling-process.png)
+
+### Resultado Final
+![Resultado del escalado](www.root/final-result.png)
 
 ## Requisitos del Sistema
 
@@ -26,12 +36,17 @@ Software profesional para escalar patrones de calzado utilizando el sistema fran
 3. Ejecute el instalador
 4. Siga las instrucciones del asistente de instalación
 
+### Guía Visual de Instalación
+![Pasos de instalación](www.root/installation-steps.png)
+
 ## Uso del Software
 
 1. **Preparación del Patrón**:
    - Abra CorelDRAW
    - Abra o cree el patrón base que desea escalar
    - Asegúrese de que el patrón tenga visible su número de talla
+
+   ![Preparación del patrón](www.root/pattern-prep.png)
 
 2. **Escalado**:
    - Ejecute el Escalador de Patrones Profesional
@@ -41,12 +56,16 @@ Software profesional para escalar patrones de calzado utilizando el sistema fran
    - Ingrese el rango de tallas que desea generar (talla menor y mayor)
    - Confirme la operación
 
+   ![Proceso de escalado](www.root/scaling-steps.png)
+
 3. **Resultados**:
    - El programa generará automáticamente todas las tallas solicitadas
    - Cada patrón nuevo tendrá:
      - Las dimensiones correctas según el sistema francés
      - Los números actualizados correspondientes a su talla
      - Una posición ordenada en el espacio de trabajo
+
+   ![Resultados finales](www.root/final-results.png)
 
 ## Notas Importantes
 
@@ -62,10 +81,14 @@ Software profesional para escalar patrones de calzado utilizando el sistema fran
    - Asegúrese de que el número sea visible
    - Ingrese la talla manualmente si es necesario
 
+   ![Solución de problemas de talla](www.root/troubleshooting-size.png)
+
 2. **Error de conexión con CorelDRAW**:
    - Asegúrese de que CorelDRAW esté abierto
    - Reinicie ambos programas
    - Verifique que tenga una versión compatible de CorelDRAW
+
+   ![Solución de problemas de conexión](www.root/troubleshooting-connection.png)
 
 ## Soporte
 

@@ -245,24 +245,49 @@ Public Class Form1
 
     Private WithEvents btnEjecutar As New Button()
     Private macroStorage As ThisMacroStorage_EscalarCalzado
+    Private formBackgroundImage As Image
 
     Public Sub New()
         InitializeComponent()
     End Sub
 
     Private Sub InitializeComponent()
+        ' Configurar el botón
         btnEjecutar.Text = "Escalar Patrón"
-        btnEjecutar.Location = New Point(50, 30)
+        btnEjecutar.Location = New Point(100, 80)
         btnEjecutar.Size = New Size(200, 50)
         btnEjecutar.Font = New Font("Arial", 12, FontStyle.Bold)
+        btnEjecutar.BackColor = Color.FromArgb(240, 240, 240)
+        btnEjecutar.FlatStyle = FlatStyle.Flat
 
+        ' Configurar el formulario
         Me.Text = "Escalador de Patrones Profesional"
-        Me.Size = New Size(300, 150)
+        Me.Size = New Size(400, 250)
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Controls.Add(btnEjecutar)
+
+        ' Configurar la imagen de fondo
+        Try
+            formBackgroundImage = Image.FromFile(System.IO.Path.Combine(Application.StartupPath, "www.root", "Images", "LOGO.png"))
+            Me.BackgroundImage = formBackgroundImage
+            Me.BackgroundImageLayout = ImageLayout.Stretch
+        Catch ex As Exception
+            MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
+        End Try
+    End Sub
+
+    Protected Overrides Sub OnPaintBackground(e As PaintEventArgs)
+        If formBackgroundImage IsNot Nothing Then
+            Using brush As New SolidBrush(Color.FromArgb(200, Color.White))
+                e.Graphics.DrawImage(formBackgroundImage, 0, 0, Me.Width, Me.Height)
+                e.Graphics.FillRectangle(brush, 0, 0, Me.Width, Me.Height)
+            End Using
+        Else
+            MyBase.OnPaintBackground(e)
+        End If
     End Sub
 
     Private Sub btnEjecutar_Click(sender As Object, e As EventArgs) Handles btnEjecutar.Click
@@ -275,5 +300,12 @@ Public Class Form1
             MessageBox.Show("Error al ejecutar la macro: " & vbCrLf & ex.Message, "Error", 
                           MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
+        If formBackgroundImage IsNot Nothing Then
+            formBackgroundImage.Dispose()
+        End If
+        MyBase.OnFormClosing(e)
     End Sub
 End Class 
