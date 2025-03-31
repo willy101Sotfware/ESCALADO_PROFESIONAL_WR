@@ -200,14 +200,16 @@ Public Class ThisMacroStorage_EscalarCalzado
                             If talla <> tallaBase Then
                                 ' Calcular incrementos según sistema francés
                                 Dim diferenciaTallas As Integer = talla - tallaBase
-                                ' 6.667mm por talla en largo (2/3 cm)
+                                ' 6.667mm por talla en largo (sistema francés exacto)
                                 Dim factorLargo As Double = 1 + ((6.667 * diferenciaTallas) / 100)
-                                ' 2.5mm por talla en ancho (1/4 cm)
+                                ' 2.5mm por talla en ancho (sistema francés exacto)
                                 Dim factorAncho As Double = 1 + ((2.5 * diferenciaTallas) / 100)
 
-                                ' Duplicar y escalar con factores diferentes para largo y ancho
+                                ' Duplicar y escalar
                                 Dim newShape As Object = baseShape.Duplicate()
-                                newShape.Stretch(factorLargo, factorAncho)
+                                
+                                ' Aplicar el escalado: factorLargo para altura, factorAncho para ancho
+                                newShape.Stretch(factorAncho, factorLargo)  ' (ancho, alto)
 
                                 ' Actualizar números en el nuevo molde
                                 ActualizarNumerosEnForma(newShape, tallaBase, talla)
@@ -246,6 +248,7 @@ Public Class Form1
     Private WithEvents btnEjecutar As New Button()
     Private macroStorage As ThisMacroStorage_EscalarCalzado
     Private formBackgroundImage As Image
+    Private lblContacto As Label  ' Nuevo label para contacto
 
     Public Sub New()
         InitializeComponent()
@@ -262,12 +265,26 @@ Public Class Form1
 
         ' Configurar el formulario
         Me.Text = "Escalador de Patrones Profesional"
-        Me.Size = New Size(400, 250)
+        Me.Size = New Size(400, 280) ' Aumentar el tamaño del formulario para acomodar el label de contacto
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
         Me.StartPosition = FormStartPosition.CenterScreen
         Me.MaximizeBox = False
         Me.MinimizeBox = False
+
+        ' Crear y configurar el label de contacto
+        lblContacto = New Label()
+        lblContacto.Text = "Atención cliente: wilyd2@hotmail.com  Tel: +573147743846"
+        lblContacto.AutoSize = False
+        lblContacto.Size = New Size(400, 20)
+        lblContacto.TextAlign = ContentAlignment.MiddleCenter
+        lblContacto.Font = New Font("Arial", 9, FontStyle.Regular)
+        lblContacto.BackColor = Color.FromArgb(240, 240, 240)
+        lblContacto.ForeColor = Color.FromArgb(60, 60, 60)
+        lblContacto.Dock = DockStyle.Bottom
+
+        ' Agregar controles
         Me.Controls.Add(btnEjecutar)
+        Me.Controls.Add(lblContacto)
 
         ' Configurar la imagen de fondo
         Try
@@ -281,8 +298,11 @@ Public Class Form1
 
     Protected Overrides Sub OnPaintBackground(e As PaintEventArgs)
         If formBackgroundImage IsNot Nothing Then
-            Using brush As New SolidBrush(Color.FromArgb(200, Color.White))
-                e.Graphics.DrawImage(formBackgroundImage, 0, 0, Me.Width, Me.Height)
+            ' Dibujar la imagen de fondo sin capa semitransparente
+            e.Graphics.DrawImage(formBackgroundImage, 0, 0, Me.Width, Me.Height)
+            
+            ' Agregar una capa blanca muy sutil (casi transparente)
+            Using brush As New SolidBrush(Color.FromArgb(100, Color.White))
                 e.Graphics.FillRectangle(brush, 0, 0, Me.Width, Me.Height)
             End Using
         Else
