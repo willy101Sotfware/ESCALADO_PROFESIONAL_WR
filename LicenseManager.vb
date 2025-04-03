@@ -93,6 +93,50 @@ Public Class LicenseManager
     End Sub
 
     Public Shared Function ShowLicenseDialog() As LicenseInfo
+        ' Primero validar la contraseña
+        Using passwordForm As New Form()
+            passwordForm.Text = "Validar Administrador"
+            passwordForm.Size = New Size(300, 150)
+            passwordForm.FormBorderStyle = FormBorderStyle.FixedDialog
+            passwordForm.StartPosition = FormStartPosition.CenterScreen
+            passwordForm.MaximizeBox = False
+            passwordForm.MinimizeBox = False
+
+            ' Campo de contraseña
+            Dim txtPassword As New TextBox()
+            txtPassword.Location = New Point(20, 20)
+            txtPassword.Size = New Size(240, 25)
+            txtPassword.PasswordChar = "*"c
+            txtPassword.UseSystemPasswordChar = True
+
+            ' Botón validar
+            Dim btnValidate As New Button()
+            btnValidate.Text = "Validar"
+            btnValidate.Location = New Point(100, 60)
+            btnValidate.Size = New Size(100, 30)
+            btnValidate.BackColor = Color.FromArgb(0, 120, 215)
+            btnValidate.ForeColor = Color.White
+            btnValidate.FlatStyle = FlatStyle.Flat
+
+            Dim isValid As Boolean = False
+            AddHandler btnValidate.Click, Sub()
+                                              If txtPassword.Text = "EscaladoProfesionalWR2025" Then
+                                                  isValid = True
+                                                  passwordForm.DialogResult = DialogResult.OK
+                                                  passwordForm.Close()
+                                              Else
+                                                  MessageBox.Show("Contraseña incorrecta", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                              End If
+                                          End Sub
+
+            passwordForm.Controls.AddRange({txtPassword, btnValidate})
+
+            If passwordForm.ShowDialog() <> DialogResult.OK Then
+                Return Nothing
+            End If
+        End Using
+
+        ' Si la contraseña es correcta, mostrar el diálogo de licencia
         Using form As New Form()
             form.Text = "Generar Nueva Licencia"
             form.Size = New Size(400, 300)
@@ -147,8 +191,8 @@ Public Class LicenseManager
                                                   selectedType = LicenseTypes.OneYear
                                               End If
 
-                result = GenerateNewLicense(selectedType)
-                form.DialogResult = DialogResult.OK
+                                              result = GenerateNewLicense(selectedType)
+                                              form.DialogResult = DialogResult.OK
                 form.Close()
             End Sub
 
