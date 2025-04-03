@@ -320,38 +320,54 @@ Public Class Form1
     End Sub
 
     Private Sub InitializeComponent()
-        ' Configurar el botón ejecutar
-        btnEjecutar.Text = "Escalar Patrón"
-        btnEjecutar.Location = New Point(100, 120)
-        btnEjecutar.Size = New Size(200, 50)
-        btnEjecutar.Font = New Font("Arial", 12, FontStyle.Bold)
+        Me.Text = "Escalado Profesional"
+        Me.Size = New Size(800, 650)
+        Me.FormBorderStyle = FormBorderStyle.Sizable
+        Me.StartPosition = FormStartPosition.CenterScreen
+        Me.MaximizeBox = True
+        Me.MinimizeBox = True
+
+        ' Panel para centrar los botones
+        Dim buttonPanel As New Panel()
+        buttonPanel.Dock = DockStyle.Fill
+        buttonPanel.AutoSize = False
+
+        ' Botón Ejecutar
+        btnEjecutar.Text = "Ejecutar Escalado"
+        btnEjecutar.Size = New Size(200, 40)
         btnEjecutar.BackColor = Color.FromArgb(0, 120, 215)
         btnEjecutar.ForeColor = Color.White
         btnEjecutar.FlatStyle = FlatStyle.Flat
-        btnEjecutar.Cursor = Cursors.Hand
+        btnEjecutar.Anchor = AnchorStyles.None
+        btnEjecutar.Location = New Point((buttonPanel.Width - btnEjecutar.Width) \ 2, (buttonPanel.Height - 100) \ 2)
 
-        ' Configurar el botón admin
-        btnAdmin.Text = "Administración"
-        btnAdmin.Location = New Point(100, 190)
+        ' Botón Admin
+        btnAdmin.Text = "Administrar Licencia"
         btnAdmin.Size = New Size(200, 40)
-        btnAdmin.Font = New Font("Arial", 10, FontStyle.Regular)
-        btnAdmin.BackColor = Color.FromArgb(240, 240, 240)
+        btnAdmin.BackColor = Color.FromArgb(0, 120, 215)
+        btnAdmin.ForeColor = Color.White
         btnAdmin.FlatStyle = FlatStyle.Flat
-        btnAdmin.Cursor = Cursors.Hand
+        btnAdmin.Anchor = AnchorStyles.None
+        btnAdmin.Location = New Point(btnEjecutar.Left, btnEjecutar.Bottom + 10)
 
-        ' Configurar el formulario
-        Me.Text = "Escalado Profesional"
-        Me.Size = New Size(400, 300)
-        Me.FormBorderStyle = FormBorderStyle.FixedSingle
-        Me.MaximizeBox = False
-        Me.StartPosition = FormStartPosition.CenterScreen
+        ' Agregar los botones al panel
+        buttonPanel.Controls.AddRange({btnEjecutar, btnAdmin})
 
-        ' Agregar controles al formulario
-        Me.Controls.Add(btnEjecutar)
-        Me.Controls.Add(btnAdmin)
-    End Sub
+        ' Pie de página
+        Dim lblFooter As New Label()
+        lblFooter.Text = "ATENCIÓN AL CLIENTE" & vbCrLf & _
+                        "CORREO: wilyd2@hotmail.com" & vbCrLf & _
+                        "TEL: +573147743846 - 3178625955"
+        lblFooter.Dock = DockStyle.Bottom
+        lblFooter.Height = 80
+        lblFooter.TextAlign = ContentAlignment.MiddleCenter
+        lblFooter.Font = New Font("Arial", 12, FontStyle.Bold)
+        lblFooter.BackColor = Color.FromArgb(0, 120, 215)
+        lblFooter.ForeColor = Color.White
 
-    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' Agregar los controles al formulario
+        Me.Controls.AddRange({buttonPanel, lblFooter})
+
         Try
             ' Cargar y configurar la imagen de fondo
             Try
@@ -361,7 +377,19 @@ Public Class Form1
             Catch ex As Exception
                 MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
             End Try
+        Catch ex As Exception
+            MessageBox.Show("Error al inicializar el formulario: " & ex.Message)
+        End Try
 
+        ' Manejar el evento Resize para mantener los botones centrados
+        AddHandler Me.Resize, Sub()
+            btnEjecutar.Location = New Point((buttonPanel.Width - btnEjecutar.Width) \ 2, (buttonPanel.Height - 100) \ 2)
+            btnAdmin.Location = New Point(btnEjecutar.Left, btnEjecutar.Bottom + 10)
+        End Sub
+    End Sub
+
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Try
             ' Verificar licencia al iniciar
             currentLicense = LicenseManager.ValidateLicense()
             If Not currentLicense.IsValid Then
