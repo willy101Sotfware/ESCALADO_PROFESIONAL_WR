@@ -139,7 +139,7 @@ Public Class ThisMacroStorage_EscalarCalzado
             Using form As New Form()
                 ' Configuración básica del formulario
                 form.Text = "Escalar Patrón - Rango de Tallas"
-                form.Size = New Size(400, 300)
+                form.Size = New Size(400, 350)
                 form.FormBorderStyle = FormBorderStyle.FixedDialog
                 form.StartPosition = FormStartPosition.CenterScreen
                 form.MaximizeBox = False
@@ -149,7 +149,7 @@ Public Class ThisMacroStorage_EscalarCalzado
                 Dim formBackgroundImage2 As Image = Nothing
                 Try
                     ' Usar la ruta directa desde el directorio del proyecto
-                    formBackgroundImage2 = Image.FromFile("C:\Users\William Ruiz\Desktop\ESCALDO\www.root\Images\Logo2.png")
+                    formBackgroundImage2 = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\Logo2.png")
                     form.BackgroundImage = formBackgroundImage2
                     form.BackgroundImageLayout = ImageLayout.Stretch
 
@@ -206,11 +206,19 @@ Public Class ThisMacroStorage_EscalarCalzado
                 txtMayor.Font = New Font("Arial", 12, FontStyle.Regular)
                 txtMayor.TextAlign = HorizontalAlignment.Center
 
+                ' Checkbox para plantillas
+                Dim chkPlantilla As New CheckBox()
+                chkPlantilla.Text = "Escalar Plantilla"
+                chkPlantilla.Location = New Point(20, 150)
+                chkPlantilla.Size = New Size(200, 25)
+                chkPlantilla.Font = New Font("Arial", 10, FontStyle.Bold)
+                chkPlantilla.BackColor = Color.FromArgb(200, 255, 255, 255)
+
                 ' Botón OK con estilo
                 Dim btnOK As New Button()
                 btnOK.Text = "Generar Tallas"
                 btnOK.DialogResult = DialogResult.OK
-                btnOK.Location = New Point(100, 160)
+                btnOK.Location = New Point(100, 190)
                 btnOK.Size = New Size(200, 40)
                 btnOK.Font = New Font("Arial", 12, FontStyle.Bold)
                 btnOK.BackColor = Color.FromArgb(0, 120, 215)
@@ -219,7 +227,7 @@ Public Class ThisMacroStorage_EscalarCalzado
                 btnOK.Cursor = Cursors.Hand
 
                 ' Agregar controles directamente al formulario
-                form.Controls.AddRange({lblBase, lblMenor, txtMenor, lblMayor, txtMayor, btnOK})
+                form.Controls.AddRange({lblBase, lblMenor, txtMenor, lblMayor, txtMayor, chkPlantilla, btnOK})
 
                 ' Asegurarse de liberar la imagen cuando se cierre el formulario
                 AddHandler form.FormClosing, Sub(sender As Object, e As FormClosingEventArgs)
@@ -252,8 +260,15 @@ Public Class ThisMacroStorage_EscalarCalzado
                                 Dim diferenciaTallas As Integer = talla - tallaBase
                                 ' 6.667mm por talla en largo (sistema francés exacto)
                                 Dim factorLargo As Double = 1 + ((6.667 * diferenciaTallas) / 100)
-                                ' 2.5mm por talla en ancho (sistema francés exacto)
-                                Dim factorAncho As Double = 1 + ((2.5 * diferenciaTallas) / 100)
+                                ' Factor de ancho basado en si es plantilla o no
+                                Dim factorAncho As Double
+                                If chkPlantilla.Checked Then
+                                    ' 4.5mm por talla en ancho para plantillas (sistema francés)
+                                    factorAncho = 1 + ((4.5 * diferenciaTallas) / 100)
+                                Else
+                                    ' 2.5mm por talla en ancho para zapatos (sistema francés)
+                                    factorAncho = 1 + ((2.5 * diferenciaTallas) / 100)
+                                End If
 
                                 ' Duplicar y escalar
                                 Dim newShape As Object = baseShape.Duplicate()
@@ -411,7 +426,7 @@ Public Class Form1
 
         ' Configurar la imagen de fondo
         Try
-            formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\ESCALDO\www.root\Images\LOGO.png")
+            formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\LOGO.png")
             Me.BackgroundImage = formBackgroundImage
             Me.BackgroundImageLayout = ImageLayout.Stretch
         Catch ex As Exception
