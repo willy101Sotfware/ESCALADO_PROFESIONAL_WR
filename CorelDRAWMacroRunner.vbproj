@@ -60,9 +60,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="LicenseManager.vb" />
-    <Compile Include="AdminLicenseForm.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Program.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

@@ -149,7 +149,7 @@ Public Class ThisMacroStorage_EscalarCalzado
                 Dim formBackgroundImage2 As Image = Nothing
                 Try
                     ' Usar la ruta directa desde el directorio del proyecto
-                    formBackgroundImage2 = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\Logo2.png")
+                    formBackgroundImage2 = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\LOGO.png")
                     form.BackgroundImage = formBackgroundImage2
                     form.BackgroundImageLayout = ImageLayout.Stretch
 
@@ -312,32 +312,10 @@ Public Class Form1
 
     Private WithEvents btnEjecutar As New Button()
     Private WithEvents btnAdmin As New Button()
-    Private macroStorage As ThisMacroStorage_EscalarCalzado
     Private formBackgroundImage As Image
-    Private lblContacto As Label
     Private currentLicense As LicenseManager.LicenseInfo
 
-    ' APIs para mover la ventana
-    Private Declare Function ReleaseCapture Lib "user32.dll" () As Boolean
-    Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hwnd As IntPtr, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-
-    Protected Overrides ReadOnly Property CreateParams As CreateParams
-        Get
-            Dim cp As CreateParams = MyBase.CreateParams
-            cp.ExStyle = cp.ExStyle Or &H2000000  ' WS_EX_COMPOSITED
-            Return cp
-        End Get
-    End Property
-
     Public Sub New()
-        ' Verificar licencia antes de inicializar
-        currentLicense = LicenseManager.ValidateLicense()
-
-        If Not currentLicense.IsValid Then
-            MessageBox.Show("La licencia no es válida o ha expirado. Por favor use el botón de Administración para generar una nueva licencia.",
-                          "Error de Licencia", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End If
-
         InitializeComponent()
     End Sub
 
@@ -347,105 +325,69 @@ Public Class Form1
         btnEjecutar.Location = New Point(100, 120)
         btnEjecutar.Size = New Size(200, 50)
         btnEjecutar.Font = New Font("Arial", 12, FontStyle.Bold)
-        btnEjecutar.BackColor = Color.White
+        btnEjecutar.BackColor = Color.FromArgb(0, 120, 215)
+        btnEjecutar.ForeColor = Color.White
         btnEjecutar.FlatStyle = FlatStyle.Flat
-        btnEjecutar.FlatAppearance.BorderColor = Color.FromArgb(0, 174, 239)
-        btnEjecutar.FlatAppearance.BorderSize = 2
+        btnEjecutar.Cursor = Cursors.Hand
 
-        ' Configurar el botón de administración
+        ' Configurar el botón admin
         btnAdmin.Text = "Administración"
-        btnAdmin.Size = New Size(100, 30)
-        btnAdmin.Location = New Point(Me.Width - 120, 40)
+        btnAdmin.Location = New Point(100, 190)
+        btnAdmin.Size = New Size(200, 40)
+        btnAdmin.Font = New Font("Arial", 10, FontStyle.Regular)
+        btnAdmin.BackColor = Color.FromArgb(240, 240, 240)
         btnAdmin.FlatStyle = FlatStyle.Flat
-        btnAdmin.FlatAppearance.BorderSize = 1
-        btnAdmin.BackColor = Color.FromArgb(0, 174, 239)
-        btnAdmin.ForeColor = Color.White
-
-        ' Configurar el pie de página
-        lblContacto = New Label()
-        lblContacto.Text = "Atención cliente: wilyd2@hotmail.com  Tel: +573147743846"
-        lblContacto.AutoSize = False
-        lblContacto.Size = New Size(400, 30)
-        lblContacto.TextAlign = ContentAlignment.MiddleCenter
-        lblContacto.Font = New Font("Arial", 9, FontStyle.Bold)
-        lblContacto.BackColor = Color.FromArgb(0, 174, 239)
-        lblContacto.ForeColor = Color.White
-        lblContacto.Dock = DockStyle.Bottom
+        btnAdmin.Cursor = Cursors.Hand
 
         ' Configurar el formulario
-        Me.Text = "Escalador de Patrones Profesional"
+        Me.Text = "Escalado Profesional"
         Me.Size = New Size(400, 300)
-        Me.FormBorderStyle = FormBorderStyle.None  ' Quitar el borde estándar
-        Me.StartPosition = FormStartPosition.CenterScreen
+        Me.FormBorderStyle = FormBorderStyle.FixedSingle
         Me.MaximizeBox = False
-        Me.MinimizeBox = False
-
-        ' Panel azul para la barra de título personalizada
-        Dim titleBar As New Panel()
-        titleBar.BackColor = Color.FromArgb(0, 174, 239)
-        titleBar.Dock = DockStyle.Top
-        titleBar.Height = 30
-
-        ' Botón de cerrar
-        Dim closeButton As New Button()
-        closeButton.Text = "X"
-        closeButton.Size = New Size(30, 30)
-        closeButton.FlatStyle = FlatStyle.Flat
-        closeButton.FlatAppearance.BorderSize = 0
-        closeButton.BackColor = Color.FromArgb(0, 174, 239)
-        closeButton.ForeColor = Color.White
-        closeButton.Dock = DockStyle.Right
-        closeButton.Font = New Font("Arial", 12)
-        AddHandler closeButton.Click, Sub() Me.Close()
-
-        ' Título
-        Dim titleLabel As New Label()
-        titleLabel.Text = "Escalador de Patrones Profesional"
-        titleLabel.ForeColor = Color.White
-        titleLabel.Font = New Font("Arial", 10, FontStyle.Bold)
-        titleLabel.Dock = DockStyle.Fill
-        titleLabel.TextAlign = ContentAlignment.MiddleCenter
-
-        ' Agregar controles a la barra de título
-        titleBar.Controls.Add(closeButton)
-        titleBar.Controls.Add(titleLabel)
+        Me.StartPosition = FormStartPosition.CenterScreen
 
         ' Agregar controles al formulario
-        Me.Controls.Add(titleBar)
-        Me.Controls.Add(btnAdmin)
         Me.Controls.Add(btnEjecutar)
-        Me.Controls.Add(lblContacto)
-
-        ' Hacer que el formulario sea movible
-        AddHandler titleBar.MouseDown, Sub(sender, e)
-                                           If e.Button = MouseButtons.Left Then
-                                               ReleaseCapture()
-                                               SendMessage(Me.Handle, &H112, &HF012, 0)
-                                           End If
-                                       End Sub
-
-        ' Configurar la imagen de fondo
-        Try
-            formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\LOGO.png")
-            Me.BackgroundImage = formBackgroundImage
-            Me.BackgroundImageLayout = ImageLayout.Stretch
-        Catch ex As Exception
-            MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
-        End Try
+        Me.Controls.Add(btnAdmin)
     End Sub
 
-    Protected Overrides Sub OnPaintBackground(e As PaintEventArgs)
-        If formBackgroundImage IsNot Nothing Then
-            ' Dibujar la imagen de fondo sin capa semitransparente
-            e.Graphics.DrawImage(formBackgroundImage, 0, 0, Me.Width, Me.Height)
+    Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Try
+            ' Cargar y configurar la imagen de fondo
+            Try
+                formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\Logo2.png")
+                Me.BackgroundImage = formBackgroundImage
+                Me.BackgroundImageLayout = ImageLayout.Stretch
+            Catch ex As Exception
+                MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
+            End Try
 
-            ' Agregar una capa blanca muy sutil (casi transparente)
-            Using brush As New SolidBrush(Color.FromArgb(100, Color.White))
-                e.Graphics.FillRectangle(brush, 0, 0, Me.Width, Me.Height)
-            End Using
-        Else
-            MyBase.OnPaintBackground(e)
-        End If
+            ' Verificar licencia al iniciar
+            currentLicense = LicenseManager.ValidateLicense()
+            If Not currentLicense.IsValid Then
+                If MessageBox.Show("No hay una licencia válida instalada. ¿Desea generar una nueva licencia ahora?",
+                                 "Licencia Requerida",
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Question) = DialogResult.Yes Then
+                    currentLicense = LicenseManager.ShowLicenseDialog()
+                    If currentLicense Is Nothing OrElse Not currentLicense.IsValid Then
+                        MessageBox.Show("No se pudo generar una licencia válida. La aplicación se cerrará.",
+                                      "Error de Licencia",
+                                      MessageBoxButtons.OK,
+                                      MessageBoxIcon.Error)
+                        Me.Close()
+                    End If
+                Else
+                    Me.Close()
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show($"Error al iniciar la aplicación: {ex.Message}",
+                          "Error",
+                          MessageBoxButtons.OK,
+                          MessageBoxIcon.Error)
+            Me.Close()
+        End Try
     End Sub
 
     Private Sub btnEjecutar_Click(sender As Object, e As EventArgs) Handles btnEjecutar.Click
@@ -456,23 +398,63 @@ Public Class Form1
                 Return
             End If
 
-            If macroStorage Is Nothing Then
-                macroStorage = New ThisMacroStorage_EscalarCalzado()
-            End If
-            macroStorage.EscalarPatrones()
+            Dim macro As New ThisMacroStorage_EscalarCalzado()
+            macro.EscalarPatrones()
         Catch ex As Exception
-            MessageBox.Show("Error al ejecutar la macro: " & vbCrLf & ex.Message, "Error",
-                          MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show($"Error al ejecutar el escalado: {ex.Message}",
+                          "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
     Private Sub btnAdmin_Click(sender As Object, e As EventArgs) Handles btnAdmin.Click
-        Dim adminForm As New AdminLicenseForm()
-        If adminForm.ShowDialog() = DialogResult.OK Then
-            ' Recargar la licencia después de cerrar el formulario de administración
-            currentLicense = LicenseManager.ValidateLicense()
-        End If
+        Try
+            Dim message As String
+
+            If currentLicense IsNot Nothing Then
+                message = $"Estado de la licencia actual:{Environment.NewLine}" &
+                         $"Válida hasta: {currentLicense.ExpirationDate:dd/MM/yyyy}{Environment.NewLine}" &
+                         $"Tipo: {GetLicenseTypeText(currentLicense.LicenseType)}{Environment.NewLine}" &
+                         $"Estado: {If(currentLicense.IsValid, "Activa", "Expirada")}"
+            Else
+                message = "No hay licencia instalada."
+            End If
+
+            If MessageBox.Show($"{message}{Environment.NewLine}{Environment.NewLine}¿Desea generar una nueva licencia?",
+                             "Administración de Licencia",
+                             MessageBoxButtons.YesNo,
+                             MessageBoxIcon.Question) = DialogResult.Yes Then
+
+                Dim newLicense = LicenseManager.ShowLicenseDialog()
+                If newLicense IsNot Nothing Then
+                    currentLicense = newLicense
+                    MessageBox.Show($"Nueva licencia generada correctamente:{Environment.NewLine}" &
+                                  $"Válida hasta: {newLicense.ExpirationDate:dd/MM/yyyy}{Environment.NewLine}" &
+                                  $"Tipo: {GetLicenseTypeText(newLicense.LicenseType)}",
+                                  "Licencia Generada",
+                                  MessageBoxButtons.OK,
+                                  MessageBoxIcon.Information)
+                End If
+            End If
+        Catch ex As Exception
+            MessageBox.Show($"Error al gestionar la licencia: {ex.Message}",
+                          "Error",
+                          MessageBoxButtons.OK,
+                          MessageBoxIcon.Error)
+        End Try
     End Sub
+
+    Private Function GetLicenseTypeText(licenseType As LicenseManager.LicenseTypes) As String
+        Select Case licenseType
+            Case LicenseManager.LicenseTypes.Trial
+                Return "Prueba (1 semana)"
+            Case LicenseManager.LicenseTypes.SixMonths
+                Return "Semestral (6 meses)"
+            Case LicenseManager.LicenseTypes.OneYear
+                Return "Anual (1 año)"
+            Case Else
+                Return "Desconocido"
+        End Select
+    End Function
 
     Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
         If formBackgroundImage IsNot Nothing Then
