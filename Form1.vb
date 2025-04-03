@@ -327,10 +327,20 @@ Public Class Form1
         Me.MaximizeBox = True
         Me.MinimizeBox = True
 
+        ' Configurar el fondo
+        Try
+            formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\Logo2.png")
+            Me.BackgroundImage = formBackgroundImage
+            Me.BackgroundImageLayout = ImageLayout.Stretch
+        Catch ex As Exception
+            MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
+        End Try
+
         ' Panel para centrar los botones
         Dim buttonPanel As New Panel()
         buttonPanel.Dock = DockStyle.Fill
         buttonPanel.AutoSize = False
+        buttonPanel.BackColor = Color.Transparent
 
         ' Botón Ejecutar
         btnEjecutar.Text = "Ejecutar Escalado"
@@ -367,19 +377,6 @@ Public Class Form1
 
         ' Agregar los controles al formulario
         Me.Controls.AddRange({buttonPanel, lblFooter})
-
-        Try
-            ' Cargar y configurar la imagen de fondo
-            Try
-                formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\Logo2.png")
-                Me.BackgroundImage = formBackgroundImage
-                Me.BackgroundImageLayout = ImageLayout.Stretch
-            Catch ex As Exception
-                MessageBox.Show("No se pudo cargar la imagen de fondo: " & ex.Message)
-            End Try
-        Catch ex As Exception
-            MessageBox.Show("Error al inicializar el formulario: " & ex.Message)
-        End Try
 
         ' Manejar el evento Resize para mantener los botones centrados
         AddHandler Me.Resize, Sub()
