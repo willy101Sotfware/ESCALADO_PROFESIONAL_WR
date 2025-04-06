@@ -149,7 +149,7 @@ Public Class ThisMacroStorage_EscalarCalzado
                 Dim formBackgroundImage2 As Image = Nothing
                 Try
                     ' Usar la ruta directa desde el directorio del proyecto
-                    formBackgroundImage2 = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\LOGO.png")
+                    formBackgroundImage2 = Image.FromFile("C:\Users\Willian\Desktop\ESCALADO_PROFESIONAL_WR\www.root\Images\LOGO.png")
                     form.BackgroundImage = formBackgroundImage2
                     form.BackgroundImageLayout = ImageLayout.Stretch
 
@@ -253,28 +253,31 @@ Public Class ThisMacroStorage_EscalarCalzado
                         corelApp.Optimization = True
                         Dim desplazamiento As Double = 0
 
+                        ' Obtener dimensiones del cuadro escaneado base
+                        Dim baseBox As Object = baseShape.BoundingBox
+                        Dim baseHeight As Double = baseBox.Height
+                        Dim baseWidth As Double = baseBox.Width
+
                         ' Generar cada talla
                         For talla As Integer = tallaMenor To tallaMayor
                             If talla <> tallaBase Then
                                 ' Calcular incrementos según sistema francés
                                 Dim diferenciaTallas As Integer = talla - tallaBase
-                                ' 6.667mm por talla en largo (sistema francés exacto)
-                                Dim factorLargo As Double = 1 + ((6.667 * diferenciaTallas) / 100)
-                                ' Factor de ancho basado en si es plantilla o no
-                                Dim factorAncho As Double
-                                If chkPlantilla.Checked Then
-                                    ' 4.5mm por talla en ancho para plantillas (sistema francés)
-                                    factorAncho = 1 + ((4.5 * diferenciaTallas) / 100)
-                                Else
-                                    ' 2.5mm por talla en ancho para zapatos (sistema francés)
-                                    factorAncho = 1 + ((2.5 * diferenciaTallas) / 100)
-                                End If
 
-                                ' Duplicar y escalar
+                                ' Duplicar el cuadro completo
                                 Dim newShape As Object = baseShape.Duplicate()
 
-                                ' Aplicar el escalado: factorLargo para altura, factorAncho para ancho
-                                newShape.Stretch(factorAncho, factorLargo)  ' (ancho, alto)
+                                If chkPlantilla.Checked Then
+                                    ' Para plantillas: igual que moldes pero para el cuadro escaneado
+                                    Dim factorLargo As Double = 1 + ((3.33 * diferenciaTallas) / 100)  ' 6.67mm/2 para el cuadro
+                                    Dim factorAncho As Double = 1 + ((1.25 * diferenciaTallas) / 100)  ' 2.5mm/2 para el cuadro
+                                    newShape.Stretch(factorAncho, factorLargo)
+                                Else
+                                    ' Para moldes: sistema francés reducido para cuadro completo
+                                    Dim factorLargo As Double = 1 + ((3.33 * diferenciaTallas) / 100)  ' 6.67mm/2
+                                    Dim factorAncho As Double = 1 + ((1.25 * diferenciaTallas) / 100)  ' 2.5mm/2
+                                    newShape.Stretch(factorAncho, factorLargo)
+                                End If
 
                                 ' Actualizar números en el nuevo molde
                                 ActualizarNumerosEnForma(newShape, tallaBase, talla)
@@ -329,7 +332,7 @@ Public Class Form1
 
         ' Configurar el fondo
         Try
-            formBackgroundImage = Image.FromFile("C:\Users\William Ruiz\Desktop\willian\ESCALDO\www.root\Images\Logo2.png")
+            formBackgroundImage = Image.FromFile("C:\Users\Willian\Desktop\ESCALADO_PROFESIONAL_WR\www.root\Images\Logo2.png")
             Me.BackgroundImage = formBackgroundImage
             Me.BackgroundImageLayout = ImageLayout.Stretch
         Catch ex As Exception
