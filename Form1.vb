@@ -268,9 +268,9 @@ Public Class ThisMacroStorage_EscalarCalzado
                                 Dim newShape As Object = baseShape.Duplicate()
 
                                 If chkPlantilla.Checked Then
-                                    ' Para plantillas: igual que moldes pero para el cuadro escaneado
-                                    Dim factorLargo As Double = 1 + ((3.33 * diferenciaTallas) / 100)  ' 6.67mm/2 para el cuadro
-                                    Dim factorAncho As Double = 1 + ((1.25 * diferenciaTallas) / 100)  ' 2.5mm/2 para el cuadro
+                                    ' Para plantillas: usar factor de escala específico para plantillas
+                                    Dim factorLargo As Double = 1 + ((4.17 * diferenciaTallas) / 100)  ' 8.34mm/2 para plantillas
+                                    Dim factorAncho As Double = 1 + ((2.09 * diferenciaTallas) / 100)  ' 4.18mm/2 para plantillas
                                     newShape.Stretch(factorAncho, factorLargo)
                                 Else
                                     ' Para moldes: sistema francés reducido para cuadro completo
